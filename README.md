@@ -1,3 +1,6 @@
 # ECS171_Project
 
-Hi
+## EDA Stuffs
+### Ameya -
+Use my data wrangling code
+Some stuff on temp vs total load
