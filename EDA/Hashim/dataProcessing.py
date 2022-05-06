@@ -1,4 +1,5 @@
 import pandas as pd
+from sklearn.base import BaseEstimator, TransformerMixin
 
 # -------------------------------------------------------------------------------------------------
 # Name: StatsPeriod
@@ -7,8 +8,8 @@ import pandas as pd
 # Description:  Computes the periodic statistics of a dataset over a particular time period based
 #               on the date column that is passed to the function. This is a valid transformer
 #               that returns a list of dataframes based on the attributes passed to it and can be
-#               used in pipelines. The indices of the new dataframe will the the dates
-# Returns:      Returns a list of dataframes that contain the period-based data. All numerical data will
+#               used in pipelines. The indices of the new dataframe will be the dates
+# Returns:      Returns a list of dataframes that contain the period-based data. Only numerical data will
 #               be saved, but category based organization will also contain an extra column for the category
 #               under which the dataframe was organized
 # Version: v1.0.0
@@ -17,7 +18,7 @@ import pandas as pd
 #                                       See pandas to_period function for valid identifiers on the period
 #               - (bool) drop:          Whether to drop the original time column. Defaults to False
 #               - (str) dates_col:      The column where the dates are located in the dataframe
-#               - (str) category:       If by_category is true, then the transformer will seperate the data
+#               - (str) category:       If by_category is true, then the transformer will separate the data
 #                                       by the category column specified
 #               - (bool) by_category:   Whether to split data into categories
 #               - (string) aggregate:   How to aggregate data (currently supports mean and sum)
@@ -42,7 +43,7 @@ class StatsPeriod(BaseEstimator, TransformerMixin):
         return self
 
     # Get categories through which we are ordering
-    def getCategories(self, df):
+    def get_categories(self, df):
         cats = df[self.category].value_counts().index.tolist()
         return cats
 
@@ -68,7 +69,7 @@ class StatsPeriod(BaseEstimator, TransformerMixin):
     def transform(self, x):
         # If we are organizing by city, do so
         if self.by_category:
-            cats = self.getCategories(x)
+            cats = self.get_categories(x)
             datasets = []  # Dictionary to hold our data
 
             # Compute a dataframe for each city
@@ -124,4 +125,3 @@ class DropCols(BaseEstimator, TransformerMixin):
 
     def transform(self, x):
         return x.drop(columns=self.cols)
-
