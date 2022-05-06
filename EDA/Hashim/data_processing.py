@@ -1,6 +1,7 @@
 import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
 
+
 # -------------------------------------------------------------------------------------------------
 # Name: StatsPeriod
 # Type: Class
@@ -12,8 +13,8 @@ from sklearn.base import BaseEstimator, TransformerMixin
 # Returns:      Returns a list of dataframes that contain the period-based data. Only numerical data will
 #               be saved, but category based organization will also contain an extra column for the category
 #               under which the dataframe was organized
-# Version: v1.0.0
-# Attributes: Listed below
+# Version:      v1.0.0
+# Attributes:   Listed below
 #               - (str) period:         The period in which to combine data over, defaults to monthly period
 #                                       See pandas to_period function for valid identifiers on the period
 #               - (bool) drop:          Whether to drop the original time column. Defaults to False
@@ -25,7 +26,6 @@ from sklearn.base import BaseEstimator, TransformerMixin
 #               - (bool) drop_dups:     Whether to drop duplicate times
 # -------------------------------------------------------------------------------------------------
 
-# Create our custom transformer for computing statistics per city
 class StatsPeriod(BaseEstimator, TransformerMixin):
     def __init__(self, period="M", drop=False, dates_col="Dates", category="city_name", by_category=False,
                  aggregate="mean", drop_dups=None):
