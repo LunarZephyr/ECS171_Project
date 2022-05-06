@@ -24,8 +24,6 @@ from sklearn.base import BaseEstimator, TransformerMixin
 #               - (string) aggregate:   How to aggregate data (currently supports mean and sum)
 #               - (bool) drop_dups:     Whether to drop duplicate times
 # -------------------------------------------------------------------------------------------------
-from sklearn.base import BaseEstimator, TransformerMixin
-
 
 # Create our custom transformer for computing statistics per city
 class StatsPeriod(BaseEstimator, TransformerMixin):
