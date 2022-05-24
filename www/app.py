@@ -28,7 +28,7 @@ weather_features = [
     "clouds_all",
 ]
 
-weather_params = [
+weather_main_params = [
     "Clear",
     "Clouds",
     "Drizzle",
@@ -46,7 +46,7 @@ weather_params = [
 seasons = ["fall", "spring", "summer", "winter"]
 
 times_of_day = ["day", "morning", "night"]
-# weather_features += weather_params
+# weather_features += weather_main_params
 
 cities = ["valencia", "barcelona", "bilbao", "madrid", "seville"]
 
@@ -55,8 +55,17 @@ max_price = 99.5
 
 
 def get_feature_one_hot_encoding(feature, feature_params):
-    # One hot encoding of weather_main param
-    # Source: https://www.educative.io/edpresso/one-hot-encoding-in-python
+    """
+    Generate One-hot Encoding of a feature
+    Source: https://www.educative.io/edpresso/one-hot-encoding-in-python
+
+    Args:
+        feature: Feature value to encode
+        feature_params: All possible values of the feature
+
+    Returns:
+        list: One-hot encoding of the feature value
+    """
     mapping = {}
     for param in range(len(feature_params)):
         mapping[feature_params[param]] = param
@@ -96,6 +105,17 @@ def get_current_season():
 
 
 def get_api_weather_features_data(weather_data) -> list:
+    """
+    Get the current values of all the weather features from the JSON file
+    returned by the OpenWeather API.
+
+    Args:
+        weather_data: dictionary containing the weather data returned by the
+        API.
+
+    Returns:
+        list: List of the weather feature values
+    """
     weather_features_data = []
     weather_features_data.extend(
         [
@@ -127,7 +147,7 @@ def get_api_weather_features_data(weather_data) -> list:
     else:
         weather_features_data.append(0)
     weather_main = get_feature_one_hot_encoding(
-        feature=weather_data["weather"][0]["main"], feature_params=weather_params
+        feature=weather_data["weather"][0]["main"], feature_params=weather_main_params
     )[0]
     # weather_features_data.extend(weather_main)
     time_of_day = get_feature_one_hot_encoding(
@@ -141,7 +161,14 @@ def get_api_weather_features_data(weather_data) -> list:
     return weather_features_data
 
 
-def get_avg_weather_features_data():
+def get_avg_weather_features_data() -> pd.DataFrame:
+    """
+    Get the average weather feature data for the 5 cities in Spain.
+
+    Returns:
+        pd.DataFrame: A pandas Dataframe containing the averaged weather feature
+        data.
+    """
     avg_weather_data = [0] * len(weather_features)
     for city in cities:
         weather_data = requests.get(
@@ -156,6 +183,12 @@ def get_avg_weather_features_data():
 
 
 def get_current_generation_data() -> pd.DataFrame:
+    """
+    Extract the current generation data from the ENTSOE API.
+
+    Returns:
+        pd.DataFrame: Pandas Dataframe containing current generation data
+    """
     today_time = datetime.combine(datetime.today(), time.min)
     tomorrow_time = today_time + timedelta(days=1)
     generation_data: pd.DataFrame = entsoe_client.query_installed_generation_capacity(
