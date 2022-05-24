@@ -43,7 +43,10 @@ weather_params = [
     "Thunderstorm",
 ]
 
-weather_features += weather_params
+seasons = ["fall", "spring", "summer", "winter"]
+
+times_of_day = ["day", "morning", "night"]
+# weather_features += weather_params
 
 cities = ["valencia", "barcelona", "bilbao", "madrid", "seville"]
 
@@ -51,23 +54,48 @@ min_price = 13.55
 max_price = 99.5
 
 
-def get_one_hot_encoding_weather_main(weather_main):
+def get_feature_one_hot_encoding(feature, feature_params):
     # One hot encoding of weather_main param
     # Source: https://www.educative.io/edpresso/one-hot-encoding-in-python
     mapping = {}
-    for param in range(len(weather_params)):
-        mapping[weather_params[param]] = param
+    for param in range(len(feature_params)):
+        mapping[feature_params[param]] = param
 
     one_hot_encoding = []
 
-    encoding = list(np.zeros(len(weather_params), dtype=int))
-    encoding[mapping[weather_main]] = 1
+    encoding = list(np.zeros(len(feature_params), dtype=int))
+    encoding[mapping[feature]] = 1
     one_hot_encoding.append(encoding)
 
     return one_hot_encoding
 
 
-def get_weather_features_data(weather_data) -> list:
+def get_current_time_of_day():
+    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    hour = int(current_time[11:13])
+    if hour >= 6 and hour < 12:
+        return "morning"
+    elif hour >= 12 and hour <= 17:
+        return "day"
+    return "night"
+
+
+def get_current_season():
+    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    month = int(current_time[5:7])
+
+    if month in [12, 1, 2]:
+        return "winter"
+    elif month in [3, 4, 5]:
+        return "spring"
+    elif month in [6, 7, 8]:
+        return "summer"
+    else:
+        return "fall"
+
+
+def get_api_weather_features_data(weather_data) -> list:
     weather_features_data = []
     weather_features_data.extend(
         [
@@ -80,9 +108,14 @@ def get_weather_features_data(weather_data) -> list:
         [weather_data["wind"]["speed"], weather_data["wind"]["deg"]]
     )
     if weather_data.get("rain"):
-        weather_features_data.extend(
-            [weather_data["rain"]["1h"], weather_data["rain"]["3h"]]
-        )
+        if weather_data["rain"].get("1h"):
+            weather_features_data.append(weather_data["rain"]["1h"])
+        else:
+            weather_features_data.append(0)
+        if weather_data["rain"].get("3h"):
+            weather_features_data.append(weather_data["rain"]["3h"])
+        else:
+            weather_features_data.append(0)
     else:
         weather_features_data.extend([0, 0])
     if weather_data.get("snow"):
@@ -93,14 +126,17 @@ def get_weather_features_data(weather_data) -> list:
         weather_features_data.append(weather_data["clouds"]["all"])
     else:
         weather_features_data.append(0)
-    weather_main = get_one_hot_encoding_weather_main(
-        weather_data["weather"][0]["main"]
+    weather_main = get_feature_one_hot_encoding(
+        feature=weather_data["weather"][0]["main"], feature_params=weather_params
     )[0]
-    weather_features_data.extend(weather_main)
-
-    weather_features_data_pd = pd.DataFrame(
-        [weather_features_data], columns=weather_features
-    )
+    # weather_features_data.extend(weather_main)
+    time_of_day = get_feature_one_hot_encoding(
+        feature=get_current_time_of_day(), feature_params=times_of_day
+    )[0]
+    current_season = get_feature_one_hot_encoding(
+        feature=get_current_season(), feature_params=seasons
+    )[0]
+    print(time_of_day, current_season)
 
     return weather_features_data
 
@@ -111,10 +147,11 @@ def get_avg_weather_features_data():
         weather_data = requests.get(
             f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={OPENWEATHER_API_KEY}"
         ).json()
-        weather_data = get_weather_features_data(weather_data=weather_data)
+        weather_data = get_api_weather_features_data(weather_data=weather_data)
         for i, data in enumerate(weather_data):
             avg_weather_data[i] += data
     avg_weather_data = [i / 5 for i in avg_weather_data]
+    avg_weather_data = pd.DataFrame([avg_weather_data], columns=weather_features)
     return avg_weather_data
 
 
@@ -126,10 +163,20 @@ def get_current_generation_data() -> pd.DataFrame:
         start=pd.Timestamp(today_time, tz="Europe/Madrid"),
         end=pd.Timestamp(tomorrow_time, tz="Europe/Madrid"),
     )
+    generation_data.drop(
+        columns=[
+            "Geothermal",
+            "Fossil Peat",
+            "Fossil Oil shale",
+            "Fossil Coal-derived gas",
+            "Marine",
+        ],
+        inplace=True,
+    )
     day_ahead_data: pd.DataFrame = entsoe_client.query_wind_and_solar_forecast(
         "ES",
-        start=pd.Timestamp(today_time, tz="Europe/Madrid"),
-        end=pd.Timestamp(tomorrow_time, tz="Europe/Madrid"),
+        start=pd.Timestamp(tomorrow_time, tz="Europe/Madrid"),
+        end=pd.Timestamp(tomorrow_time + timedelta(days=1), tz="Europe/Madrid"),
     )
     avg_day_ahead_data = pd.DataFrame(
         columns=["forecast solar day ahead", "forecast wind onshore day ahead"]
@@ -148,8 +195,9 @@ def get_current_prediction():
     weather_data = get_avg_weather_features_data()
 
     generation_data = get_current_generation_data()
+    print(generation_data.columns)
     generation_data = generation_data.iloc[0].values
 
-    price_pred = model.predict([weather_data])[0]
+    price_pred = model.predict(weather_data.to_numpy())[0]
     price_pred = price_pred * (max_price - min_price) + min_price
     return jsonify(dict(price=price_pred))
