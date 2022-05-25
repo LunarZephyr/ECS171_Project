@@ -1,10 +1,11 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 import pickle5 as pickle
 import requests
 import pandas as pd
 from entsoe import EntsoePandasClient
 from datetime import datetime, time, timedelta
 import numpy as np
+from statistics import mode
 
 OPENWEATHER_API_KEY = "a11c32d6bed06cc334b5bcd036947fad"
 ENTSOE_API_KEY = "2d4af50f-d03b-435e-be11-23a69f79cb16"
@@ -16,7 +17,7 @@ entsoe_client = EntsoePandasClient(api_key=ENTSOE_API_KEY)
 with open("model_pkl", "rb") as f:
     model = pickle.load(f)
 
-weather_features = [
+numerical_weather_features = [
     "temp",
     "pressure",
     "humidity",
@@ -46,7 +47,37 @@ weather_main_params = [
 seasons = ["fall", "spring", "summer", "winter"]
 
 times_of_day = ["day", "morning", "night"]
-# weather_features += weather_main_params
+
+categorical_features = [weather_main_params, seasons, times_of_day]
+
+weather_categorical_input_params = [
+    "weather_main",
+    "season",
+    "time_of_day",
+]
+
+weather_input_params = numerical_weather_features + weather_categorical_input_params
+
+generation_input_params = [
+    "biomass",
+    "fossil_brown_coal/lignite",
+    "fossil_gas",
+    "fossil_hard_coal",
+    "fossil_oil",
+    "hydro_pumped_storage_consumption",
+    "hydro_run_of_river_poundage",
+    "hydro_water_reservoir",
+    "nuclear",
+    "other",
+    "other_renewable",
+    "solar",
+    "waste",
+    "wind_offshore",
+    "wind_onshore",
+    "forecast_solar_day_ahead",
+    "forecast_wind_onshore_day_ahead",
+    "total_load_actual",
+]
 
 cities = ["valencia", "barcelona", "bilbao", "madrid", "seville"]
 
@@ -104,7 +135,7 @@ def get_current_season():
         return "fall"
 
 
-def get_api_weather_features_data(weather_data) -> list:
+def get_api_numerical_weather_features_data(weather_data) -> list:
     """
     Get the current values of all the weather features from the JSON file
     returned by the OpenWeather API.
@@ -146,19 +177,15 @@ def get_api_weather_features_data(weather_data) -> list:
         weather_features_data.append(weather_data["clouds"]["all"])
     else:
         weather_features_data.append(0)
-    weather_main = get_feature_one_hot_encoding(
-        feature=weather_data["weather"][0]["main"], feature_params=weather_main_params
-    )[0]
-    # weather_features_data.extend(weather_main)
-    time_of_day = get_feature_one_hot_encoding(
-        feature=get_current_time_of_day(), feature_params=times_of_day
-    )[0]
-    current_season = get_feature_one_hot_encoding(
-        feature=get_current_season(), feature_params=seasons
-    )[0]
-    print(time_of_day, current_season)
-
     return weather_features_data
+
+
+def get_api_categorical_weather_features_data(weather_data) -> list:
+    categorical_weather_features_data = []
+    categorical_weather_features_data.append(weather_data["weather"][0]["main"])
+    categorical_weather_features_data.append(get_current_season())
+    categorical_weather_features_data.append(get_current_time_of_day())
+    return categorical_weather_features_data
 
 
 def get_avg_weather_features_data() -> pd.DataFrame:
@@ -169,16 +196,43 @@ def get_avg_weather_features_data() -> pd.DataFrame:
         pd.DataFrame: A pandas Dataframe containing the averaged weather feature
         data.
     """
-    avg_weather_data = [0] * len(weather_features)
+    avg_weather_data = [0] * len(numerical_weather_features)
+    categorical_weather_data_aggr = []
     for city in cities:
         weather_data = requests.get(
             f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={OPENWEATHER_API_KEY}"
         ).json()
-        weather_data = get_api_weather_features_data(weather_data=weather_data)
-        for i, data in enumerate(weather_data):
+        numerical_weather_data = get_api_numerical_weather_features_data(
+            weather_data=weather_data
+        )
+        categorical_weather_data = get_api_categorical_weather_features_data(
+            weather_data=weather_data
+        )
+        categorical_weather_data_aggr.append(categorical_weather_data)
+        for i, data in enumerate(numerical_weather_data):
             avg_weather_data[i] += data
     avg_weather_data = [i / 5 for i in avg_weather_data]
-    avg_weather_data = pd.DataFrame([avg_weather_data], columns=weather_features)
+
+    # Get value of categorical features with highest frequency
+    for i in range(len(categorical_weather_data_aggr[0])):
+        categorical_feature_mode = mode(
+            [
+                categorical_weather_data_aggr[j][i]
+                for j in range(len(categorical_weather_data_aggr))
+            ]
+        )
+        avg_weather_data.extend(
+            get_feature_one_hot_encoding(
+                feature=categorical_feature_mode, feature_params=categorical_features[i]
+            )[0]
+        )
+    avg_weather_data = pd.DataFrame(
+        [avg_weather_data],
+        columns=numerical_weather_features
+        + weather_main_params
+        + seasons
+        + times_of_day,
+    )
     return avg_weather_data
 
 
@@ -226,11 +280,31 @@ def get_current_generation_data() -> pd.DataFrame:
 @app.route("/prediction/current")
 def get_current_prediction():
     weather_data = get_avg_weather_features_data()
+    print(weather_data.to_numpy())
 
     generation_data = get_current_generation_data()
-    print(generation_data.columns)
     generation_data = generation_data.iloc[0].values
 
+    price_pred = model.predict(weather_data.to_numpy())[0]
+    price_pred = price_pred * (max_price - min_price) + min_price
+    return jsonify(dict(price=price_pred))
+
+
+@app.route("/prediction")
+def get_prediction_from_input_params():
+    request_args = request.args.to_dict()
+
+    weather_data = []
+    for feature in numerical_weather_features:
+        weather_data.append(request_args[feature])
+
+    for i, feature in enumerate(weather_categorical_input_params):
+        categorical_feature = request_args[feature]
+        weather_data.extend(
+            get_feature_one_hot_encoding(
+                feature=categorical_feature, feature_params=categorical_features[i]
+            )[0]
+        )
     price_pred = model.predict(weather_data.to_numpy())[0]
     price_pred = price_pred * (max_price - min_price) + min_price
     return jsonify(dict(price=price_pred))
