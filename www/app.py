@@ -302,7 +302,7 @@ def get_prediction_from_input_params():
             return Response(
                 f"{feature} feature not included in request parameters", status=400
             )
-        weather_data.append(request_args.get(feature))
+        weather_data.append(float(request_args.get(feature)))
 
     for i, feature in enumerate(weather_categorical_input_params):
         if request_args.get(feature) == None:
@@ -321,7 +321,7 @@ def get_prediction_from_input_params():
             return Response(
                 f"{feature} feature not included in request parameters", status=400
             )
-        generation_data.append(request_args.get(feature))
+        generation_data.append(float(request_args.get(feature)))
     price_pred = model.predict(weather_data.to_numpy())[0]
     price_pred = price_pred * (max_price - min_price) + min_price
     return jsonify(dict(price=price_pred))
