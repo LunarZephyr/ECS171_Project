@@ -309,4 +309,4 @@ def get_prediction_from_input_params():
         generation_data.append(float(request_args.get(feature)))
     price_pred = model.predict(weather_data.to_numpy())[0]
     price_pred = price_pred * (max_price - min_price) + min_price
-    return jsonify(dict(price=price_pred))
+    return jsonify(dict(price=str(price_pred)))
