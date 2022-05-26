@@ -15,7 +15,7 @@ app = Flask(__name__, static_url_path="", static_folder="client/build")
 
 entsoe_client = EntsoePandasClient(api_key=ENTSOE_API_KEY)
 
-with open("model_pkl", "rb") as f:
+with open("XGBOOST_predict_price.pkl", "rb") as f:
     model = pickle.load(f)
 
 numerical_weather_features = [
@@ -34,15 +34,9 @@ weather_main_params = [
     "Clear",
     "Clouds",
     "Drizzle",
-    "Dust",
-    "Dog",
-    "Haze",
+    "Fog",
     "Mist",
-    "Rain",
-    "Smoke",
-    "Snow",
-    "Squall",
-    "Thunderstorm",
+    "Rain"
 ]
 
 seasons = ["fall", "spring", "summer", "winter"]
@@ -73,10 +67,7 @@ generation_input_params = [
     "other_renewable",
     "solar",
     "waste",
-    "wind_offshore",
     "wind_onshore",
-    "forecast_solar_day_ahead",
-    "forecast_wind_onshore_day_ahead",
     "total_load_actual",
 ]
 
@@ -258,37 +249,31 @@ def get_current_generation_data() -> pd.DataFrame:
             "Fossil Oil shale",
             "Fossil Coal-derived gas",
             "Marine",
+            "Wind Offshore"
         ],
         inplace=True,
     )
-    day_ahead_data: pd.DataFrame = entsoe_client.query_wind_and_solar_forecast(
+    total_load: pd.DataFrame = entsoe_client.query_load(
         "ES",
-        start=pd.Timestamp(tomorrow_time, tz="Europe/Madrid"),
-        end=pd.Timestamp(tomorrow_time + timedelta(days=1), tz="Europe/Madrid"),
+        start=pd.Timestamp(today_time, tz="Europe/Madrid"),
+        end=pd.Timestamp(tomorrow_time, tz="Europe/Madrid"),
     )
-    avg_day_ahead_data = pd.DataFrame(
-        columns=["forecast solar day ahead", "forecast wind onshore day ahead"]
+    avg_total_load = pd.DataFrame(
+        columns=["total load actual"]
     )
-    avg_day_ahead_data["forecast solar day ahead"] = [day_ahead_data["Solar"].mean()]
-    avg_day_ahead_data["forecast wind onshore day ahead"] = [
-        day_ahead_data["Wind Onshore"].mean()
-    ]
-
-    generation_data = pd.concat([generation_data, avg_day_ahead_data])
+    avg_total_load["total load actual"] = [total_load["Actual Load"].mean()]
+    generation_data = pd.concat([generation_data, avg_total_load])
     return generation_data
 
 
 @app.route("/prediction/current")
 def get_current_prediction():
     weather_data = get_avg_weather_features_data()
-
     generation_data = get_current_generation_data()
-    print(generation_data.columns)
-    generation_data = generation_data.iloc[0].values
+    weather_and_generation_data = pd.concat([weather_data, generation_data])
 
-    price_pred = model.predict(weather_data.to_numpy())[0]
-    price_pred = price_pred * (max_price - min_price) + min_price
-    return jsonify(dict(price=price_pred))
+    price_pred = model.predict(weather_and_generation_data.to_numpy())[0]
+    return jsonify(dict(price=str(price_pred)))
 
 
 @app.route("/prediction")
