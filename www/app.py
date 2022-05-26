@@ -1,4 +1,5 @@
-from flask import Flask, jsonify, request
+import enum
+from flask import Flask, jsonify, request, Response
 import pickle5 as pickle
 import requests
 import pandas as pd
@@ -280,9 +281,9 @@ def get_current_generation_data() -> pd.DataFrame:
 @app.route("/prediction/current")
 def get_current_prediction():
     weather_data = get_avg_weather_features_data()
-    print(weather_data.to_numpy())
 
     generation_data = get_current_generation_data()
+    print(generation_data.columns)
     generation_data = generation_data.iloc[0].values
 
     price_pred = model.predict(weather_data.to_numpy())[0]
@@ -295,16 +296,32 @@ def get_prediction_from_input_params():
     request_args = request.args.to_dict()
 
     weather_data = []
+    generation_data = []
     for feature in numerical_weather_features:
-        weather_data.append(request_args[feature])
+        if request_args.get(feature) == None:
+            return Response(
+                f"{feature} feature not included in request parameters", status=400
+            )
+        weather_data.append(request_args.get(feature))
 
     for i, feature in enumerate(weather_categorical_input_params):
-        categorical_feature = request_args[feature]
+        if request_args.get(feature) == None:
+            return Response(
+                f"{feature} feature not included in request parameters", status=400
+            )
+        categorical_feature = request_args.get(feature)
         weather_data.extend(
             get_feature_one_hot_encoding(
                 feature=categorical_feature, feature_params=categorical_features[i]
             )[0]
         )
+
+    for feature in generation_input_params:
+        if request_args.get(feature) == None:
+            return Response(
+                f"{feature} feature not included in request parameters", status=400
+            )
+        generation_data.append(request_args.get(feature))
     price_pred = model.predict(weather_data.to_numpy())[0]
     price_pred = price_pred * (max_price - min_price) + min_price
     return jsonify(dict(price=price_pred))
