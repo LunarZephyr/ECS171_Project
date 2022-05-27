@@ -75,7 +75,14 @@ Our data-set consists of two CSV files
 An example of subsection...
 
 \section{Methodology}\label{sec:4}
-We worked hard, and achieved very little...
+For our analysis we utilized several different machine learning methods and algorithms to find which one gave us a possible correlation between variables. Our main methodology was to find a regression model that matched and accurately predicted the outcome of later data. Our group ran many models such as ANN’s, DNN’s, XGBoost, and other various algorithms. 
+\\
+\\
+\textbf{XGBoost}\\
+The first model that we found significant success in was the XGBoost regression model. We selected this model due to its widespread adoption in industry applications due to its high model capacity, prediction performance, and other performance benefits such as parallelism (through the implemented framework).  XGBoost is an ensemble model variant, where ensembling occurs in a sequential fashion, using gradient boosting.  Each model in the ensemble is trained to correct the error of the previous model in the ensemble by updating its weights using the gradient of the loss function w.r.t. the previous’ models output (and thus, error).  This allows for computational feasibility and heightened performance.  Further, our data is tabular, a data form that XGBoost handles very well.
+\\
+\\
+<Jaqueline include figure with explanation>
 
 \newpage
 
