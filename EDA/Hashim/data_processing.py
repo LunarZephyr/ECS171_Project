@@ -66,7 +66,7 @@ class StatsPeriod(BaseEstimator, TransformerMixin):
             return df.groupby("Date").mean()  # append the dataframe to the datasets array
         elif self.aggregate == "sum":
             return df.groupby("Date").sum()
-        return df.groupby("Date").sum()
+        return df.groupby("Date").all()
 
     def transform(self, x):
         # If we are organizing by city, do so
