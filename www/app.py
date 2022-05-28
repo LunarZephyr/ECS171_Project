@@ -7,6 +7,7 @@ from entsoe import EntsoePandasClient
 from datetime import datetime, time, timedelta
 import numpy as np
 from statistics import mode
+import random
 
 OPENWEATHER_API_KEY = "a11c32d6bed06cc334b5bcd036947fad"
 ENTSOE_API_KEY = "2d4af50f-d03b-435e-be11-23a69f79cb16"
@@ -16,7 +17,7 @@ app = Flask(__name__, static_url_path="", static_folder="client/build")
 entsoe_client = EntsoePandasClient(api_key=ENTSOE_API_KEY)
 
 with open("XGBOOST_predict_price.pkl", "rb") as f:
-    model = pickle.load(f)
+    price_model = pickle.load(f)
 
 numerical_weather_features = [
     "temp",
@@ -30,14 +31,7 @@ numerical_weather_features = [
     "clouds_all",
 ]
 
-weather_main_params = [
-    "Clear",
-    "Clouds",
-    "Drizzle",
-    "Fog",
-    "Mist",
-    "Rain"
-]
+weather_main_params = ["Clear", "Clouds", "Drizzle", "Fog", "Mist", "Rain"]
 
 seasons = ["fall", "spring", "summer", "winter"]
 
@@ -96,7 +90,10 @@ def get_feature_one_hot_encoding(feature, feature_params):
     one_hot_encoding = []
 
     encoding = list(np.zeros(len(feature_params), dtype=int))
-    encoding[mapping[feature]] = 1
+    if mapping.get(feature) != None:
+        encoding[mapping[feature]] = 1
+    else:
+        encoding[random.randint(0, len(feature_params) - 1)] = 1
     one_hot_encoding.append(encoding)
 
     return one_hot_encoding
@@ -172,7 +169,16 @@ def get_api_numerical_weather_features_data(weather_data) -> list:
     return weather_features_data
 
 
-def get_api_categorical_weather_features_data(weather_data) -> list:
+def get_api_categorical_weather_features_data(weather_data: dict) -> list:
+    """
+    Get values of categorical weather attributes from weather API
+
+    Args:
+        weather_data (dict): Dictionary containing weather data
+
+    Returns:
+        list: List containing values for categorical attributes
+    """
     categorical_weather_features_data = []
     categorical_weather_features_data.append(weather_data["weather"][0]["main"])
     categorical_weather_features_data.append(get_current_season())
@@ -249,7 +255,7 @@ def get_current_generation_data() -> pd.DataFrame:
             "Fossil Oil shale",
             "Fossil Coal-derived gas",
             "Marine",
-            "Wind Offshore"
+            "Wind Offshore",
         ],
         inplace=True,
     )
@@ -258,22 +264,30 @@ def get_current_generation_data() -> pd.DataFrame:
         start=pd.Timestamp(today_time, tz="Europe/Madrid"),
         end=pd.Timestamp(tomorrow_time, tz="Europe/Madrid"),
     )
-    avg_total_load = pd.DataFrame(
-        columns=["total load actual"]
-    )
+    avg_total_load = pd.DataFrame(columns=["total load actual"])
     avg_total_load["total load actual"] = [total_load["Actual Load"].mean()]
-    generation_data = pd.concat([generation_data, avg_total_load])
-    return generation_data
+    generation_data: pd.Series = pd.concat(
+        [generation_data.iloc[0], avg_total_load.iloc[0]]
+    )
+    return generation_data.to_frame().T
 
 
 @app.route("/prediction/current")
 def get_current_prediction():
     weather_data = get_avg_weather_features_data()
     generation_data = get_current_generation_data()
-    weather_and_generation_data = pd.concat([weather_data, generation_data])
+    weather_and_generation_data = (
+        pd.concat([weather_data.iloc[0], generation_data.iloc[0]]).to_frame().T
+    )
+    price_pred = price_model.predict(weather_and_generation_data.to_numpy())[0]
 
-    price_pred = model.predict(weather_and_generation_data.to_numpy())[0]
-    return jsonify(dict(price=str(price_pred)))
+    return jsonify(
+        dict(
+            price=str(price_pred),
+            weather=weather_data.iloc[0].to_dict(),
+            generation=generation_data.iloc[0].to_dict(),
+        )
+    )
 
 
 @app.route("/prediction")
@@ -307,6 +321,6 @@ def get_prediction_from_input_params():
                 f"{feature} feature not included in request parameters", status=400
             )
         generation_data.append(float(request_args.get(feature)))
-    price_pred = model.predict(weather_data.to_numpy())[0]
+    price_pred = price_model.predict(weather_data.to_numpy())[0]
     price_pred = price_pred * (max_price - min_price) + min_price
     return jsonify(dict(price=str(price_pred)))
