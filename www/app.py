@@ -321,6 +321,6 @@ def get_prediction_from_input_params():
                 f"{feature} feature not included in request parameters", status=400
             )
         generation_data.append(float(request_args.get(feature)))
-    price_pred = price_model.predict(weather_data.to_numpy())[0]
-    price_pred = price_pred * (max_price - min_price) + min_price
+    weather_and_generation_data = weather_data + generation_data
+    price_pred = price_model.predict([weather_and_generation_data])[0]
     return jsonify(dict(price=float(price_pred)))
