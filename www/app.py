@@ -283,7 +283,7 @@ def get_current_prediction():
 
     return jsonify(
         dict(
-            price=str(price_pred),
+            price=float(price_pred),
             weather=weather_data.iloc[0].to_dict(),
             generation=generation_data.iloc[0].to_dict(),
         )
@@ -323,4 +323,4 @@ def get_prediction_from_input_params():
         generation_data.append(float(request_args.get(feature)))
     price_pred = price_model.predict(weather_data.to_numpy())[0]
     price_pred = price_pred * (max_price - min_price) + min_price
-    return jsonify(dict(price=str(price_pred)))
+    return jsonify(dict(price=float(price_pred)))
