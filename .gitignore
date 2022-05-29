@@ -1,2 +1,5 @@
-/.vscode/
+.vscode/
 .idea/
+*-checkpoint.ipynb
+model_pkl
+.DS_Store

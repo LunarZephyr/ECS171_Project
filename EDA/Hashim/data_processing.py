@@ -24,11 +24,13 @@ from sklearn.base import BaseEstimator, TransformerMixin
 #               - (bool) by_category:   Whether to split data into categories
 #               - (string) aggregate:   How to aggregate data (currently supports mean and sum)
 #               - (bool) drop_dups:     Whether to drop duplicate times
+#               - (bool) return_df:     Whether to only return first category or not of filtered array
+#               - (int)  return_index:  The index to return. Only necessary if return_df is True and by_category is True
 # -------------------------------------------------------------------------------------------------
 
 class StatsPeriod(BaseEstimator, TransformerMixin):
     def __init__(self, period="M", drop=False, dates_col="Dates", category="city_name", by_category=False,
-                 aggregate="mean", drop_dups=None):
+                 aggregate="mean", drop_dups=None, df=False, df_index=0):
         self.period = period
         self.drop = drop
         self.dates_col = dates_col
@@ -36,6 +38,8 @@ class StatsPeriod(BaseEstimator, TransformerMixin):
         self.by_category = by_category
         self.aggregate = aggregate
         self.drop_dups = drop_dups
+        self.df = df
+        self.df_index = df_index
 
     def fit(self, x, y=None):
         return self
@@ -88,7 +92,12 @@ class StatsPeriod(BaseEstimator, TransformerMixin):
                 print(x[self.category][bool_array])
                 df_numeric[self.category] = item
                 datasets.append(df_numeric)
-            return datasets
+
+            if self.df:
+                return datasets[self.df_index]
+            else:
+                return datasets
+
         else:
             # Drop any rows that contain any missing data
             datasets = []
@@ -102,7 +111,11 @@ class StatsPeriod(BaseEstimator, TransformerMixin):
             # Convert dataset to specific period and compute mean based on period
             df_numeric["Date"] = df_numeric["Date"].dt.to_period(self.period)
             datasets.append(self.combine(df_numeric))
-            return datasets
+
+            if self.df:
+                return datasets[0]
+            else:
+                return datasets
 
 
 # -------------------------------------------------------------------------------------------------

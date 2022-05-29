@@ -1,41 +1,21 @@
 \documentclass[10pt]{article}
-% -------------------------------------------------------------------
-% Pacotes básicos
-\usepackage[english]{babel}										% Idioma a ser usado
-                                                                % Trocar "english" para "brazil" para artigos escritos em língua portuguesa 
-\usepackage[utf8]{inputenc}										% Escrita de caracteres acentuados e cedilhas - 1
-\usepackage[T1]{fontenc}										% Escrita de caracteres acentuados + outros detalhes técnicos fundamentais
-% -------------------------------------------------------------------
-% Pacotes matemáticos
+\usepackage[english]{babel}									
+\usepackage[utf8]{inputenc}									
+\usepackage[T1]{fontenc}										
 \usepackage{amsmath,amsfonts,amssymb,amsthm,cancel,siunitx,
 calculator,calc,mathtools,empheq,latexsym}
-% -------------------------------------------------------------------
-% Pacotes para inserção de figuras e subfiguras
-\usepackage{subfig,epsfig,tikz,float}		            % Packages de figuras. 
-% -------------------------------------------------------------------
-% Pacotes para inserção de tabelas
-\usepackage{booktabs,multicol,multirow,tabularx,array}          % Packages para tabela
+\usepackage{subfig,epsfig,tikz,float}		           
+\usepackage{booktabs,multicol,multirow,tabularx,array}        
 \usepackage{natbib}
-% -------------------------------------------------------------------
-% Definição de comprimentos
+\usepackage{graphicx}
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{5pt}
 \textwidth 13.5cm
 \textheight 19.5cm
 \columnsep .5cm
-% -------------------------------------------------------------------
-% Título do seu artigo 
 \title{\renewcommand{\baselinestretch}{1.17}\normalsize\bf%
-\uppercase{<Put Title Here>}
+\uppercase{Technical Analysis Between Weather, Total Load, and Price in Valencia, Spain}
 }
-% -------------------------------------------------------------------
-% Autorias
-\author{%
-<Put names here>
-}
-% -------------------------------------------------------------------
-
-%Início do documento
 
 \begin{document}
 
@@ -50,9 +30,6 @@ calculator,calc,mathtools,empheq,latexsym}
 <put class name, date, emails, and university affiliation here>
 }
 \end{center}
-
-% -------------------------------------------------------------------
-% Abstract
 \bigskip
 \noindent
 {\small{\bf ABSTRACT.}
@@ -73,92 +50,39 @@ After the abstract three keywords must be provided.
 
 \section{Introduction and Background}\label{sec:1}
 
-{\bf Pesquisa Operacional} publishes theoretical and applied papers 
-of any {\bf OR} sub-areas, as well as surveys on topics of interest 
-and papers on the history or methodology of {\bf OR}. Submitted 
-papers must be written in English, must be original, and must not 
-have been accepted for publication (or published) by a refereed 
-journal, nor be in the process of evaluation for publication by 
-any other periodical. In addition to originality and relevance, 
-it will be taken into account the quality of presentation (clarity, 
-style and organization of the text) and the adequacy of the text 
-to the interests of the readers of the journal. Submitted papers 
-will be evaluated by at least two referees using a double blind 
-review system and the final decision will be communicated to the 
-corresponding author by the Editor-in-Chief.
+The study of meteorology and the impact on humans is a multiple century old discipline that includes the study of weather patterns, climate, and many other sub-disciplines. In the modern era, one of the greatest issues in meteorology is the measure of temperature and how it impacts humans that live in different climates. As technology has advanced, systems like air conditioners, heaters, and various home devices that use electricity are more often used than before because of a higher standard of living. Our team with the use of <insert data set name and author> wants to study the relationship between the temperature and human electricity usage in Valencia, Spain and use the results to predict future usage and possible implications of a positive correlation between the two. 
 
-This is time for all good men to come to the aid of their party!
-Sample: Let $\phi_{t}$ be an Anosmia flow on a compact space $V$ 
-and $A \subset V$ a dense set. Say that the upper Lacunae
-exponents are \emph{$\frac{1}{2}$-pinched} on $A$ if
-\begin{equation}\label{eq:11}
-(a+b)^2 = a^2 + 2ab + b^2
-\end{equation}
-and so we have solved equation \ref{eq:11}.
-
-An unique figure can be inserted using the following example.
+The data set that we chose is generated from ENTSOE, which is a public portal in Spain that collects energy data in the 5 biggest cities in Spain. Since Spain is a large country with a large variability in cities, we compiled a few EDA’s into the many variables that this data set provides such as temperature, pressure, humidity, various forms of electricity generation, total load, etc. Ultimately, the area of greatest interest that we found was Valencia, Spain. Valencia is one of the southern cities that borders the Mediterranean climate and has both a dry and wet climate from the hot summers, to the cool and chilly winters. The variability in temperature, humidity, and electricity usage made Valencia a strong candidate four our case study.
 
 
 
-Figure \ref{fig:1} shows a photograph of a gull.
-
-Figures side by side can be placed as follows.
-
-\begin{figure}[!htb]
-\centering
-\subfloat[Figure at left]{
-\includegraphics[scale=0.3]{fig1}\label{fig4}
-}\qquad
-\subfloat[Figure at right]{
-\includegraphics[scale=0.3]{fig1}\label{fig3}
-}
-\caption{Figures side by side}
-\end{figure}
-
-Figure \ref{fig4} is at left and Figure \ref{fig3} is at right.
-
-An environment tabularx, an extension of tabular, creates a paragraph-like column whose width automatically expands so that the declared width of the environment is filled. Table \ref{table:tab1} shows a minimal working example.
-
-\newcolumntype{C}{>{\centering\arraybackslash}X}
-\begin{table}[!htb]
-\centering
-\caption{Insert caption here.}
-\begin{tabularx}{1.0\textwidth}{ C | C | C | C }
-\toprule
-Case & Method\#1 & Method\#2 & Method\#3 \\ 
-\midrule
-1 & 50 & 837 & 970 \\
-2 & 47 & 877 & 230 \\
-3 & 31 & 25 & 415 \\
-4 & 35 & 144 & 2356 \\
-5 & 45 & 300 & 556 \\
-\bottomrule
-\end{tabularx}
-\label{table:tab1} 
-\end{table}
 
 \section{Literature Review}\label{sec:2}
+Logically, we assume that there is a non-linear relationship between the price of electricity and the weather. One assumption that we make is that in the summers, people living in warmer climates are more likely to use air conditioning. In the winters in areas that are cold, there are more likely people that are going to use a heater. In an article by Engle, Granger, Rice, and Weiss titled “Semiparametric Estimates of the Relation between Weather and Electricity Sales”, Engle et al. describe the various factors that affect the relationship between price and weather. The use of a nonparametric regression model is important because it shows how the results are derived from the data and not from predisposed forms/information. Engle et al. review is more comprehensive than the one that our group is taking on as it accounts for many different factors when described, “Estimating this relationship, however, is complicated by the need to control for many other factors such as income, price, and overall levels of economic activity and for other seasonal effects such as vacation periods and holidays” (Engle et al., 310). However, due to the complexity of their model, it is far beyond the scope of our ECS 171 course and cannot easily be replicated. The choice of location they used for their study is St. Louis, a city that experiences both cold weather and warm weather. A summary of their results can be found in Figure 1 below.
+\includegraphics[scale=0.68]{graph1.png}
 
-A simple \LaTeX{} example of one author was written by \citet{moretti2003weighted}
-and several authors by \citet{bechara1986use}.
+Figure 1: Engle et al. pg. 316
+\\The data shows that there is a positive correlation between the temperature and use in electricity as well as total load. In our experiment we will be measuring exactly these variables but will only use natural occurring phenomena like wind, temperature, and cloud cover. Engle et al. article focused on the percent change, however, our model will focus on the actual correlation between these variables.
 
-A book can be cited by \citet{kleinrock1975queueing}.
-
-A much longer \LaTeX{} example was written by \citet{maculan2003integer}
-
-An example of technical report was written by \citet{HoracioYanasse}.
-
-% citet    -->> Citação textual no meio da frase.
-% citep    -->> Citação entre parênteses e no final da frase.
 
 \section{Data-set Description and Analysis}\label{sec:3}
-In this section we describe the results...
+Our data-set consists of two CSV files 
+
+<The second part here we are going to see what are the EDA's that are
+the most importand and impactful to our research>
 
 \subsection{Case 1}
 An example of subsection...
 
 \section{Methodology}\label{sec:4}
-We worked hard, and achieved very little...
+For our analysis we utilized several different machine learning methods and algorithms to find which one gave us a possible correlation between variables. Our main methodology was to find a regression model that matched and accurately predicted the outcome of later data. Our group ran many models such as ANN’s, DNN’s, XGBoost, and other various algorithms. 
+\\
+\\
+\textbf{XGBoost}\\
+The first model that we found significant success in was the XGBoost regression model. We selected this model due to its widespread adoption in industry applications due to its high model capacity, prediction performance, and other performance benefits such as parallelism (through the implemented framework).  XGBoost is an ensemble model variant, where ensembling occurs in a sequential fashion, using gradient boosting.  Each model in the ensemble is trained to correct the error of the previous model in the ensemble by updating its weights using the gradient of the loss function w.r.t. the previous’ models output (and thus, error).  This allows for computational feasibility and heightened performance.  Further, our data is tabular, a data form that XGBoost handles very well.
+\\
+\\
+<Jaqueline include figure with explanation>
 
 \newpage
 
@@ -169,9 +93,23 @@ Write all the results here!
 \section{Conclusion and Discussion}\label{sec:6}
 
 
-% FIM DO CONTEÚDO DO DOCUMENTO
-% -----------------------------
-\bibliographystyle{apalike} % Estilo de Bibliografia
-\bibliography{referencias.bib} % Lista de Referências Bibliográficas
+
+\bibliographystyle{apalike} 
+\bibliography{referencias.bib} 
+https://www.tandfonline.com/doi/pdf/10.1080/01621459.1986.10478274?needAccess=true
+
+\section{Customer Discovery Report}\label{sec:7}
+Customer Discovery Report\\
+The study of meteorology can be extrapolated to many different companies whose industries rely on a particular weather in one way or another. Our report primarily focuses on the city of Valencia, Spain, however, most of the interviews we conducted were done primarily in California. The variability in climate is not 1-to-1 but we can use the information that we have collected to show the importance of weather on a greater scale. Our interviews were conducted with various professors and engineers that are currently working in the field and are directly or indirectly working with machine learning methods. 
+\\
+\\
+Interview with Professor Ellis of UC Davis\\
+Our first customer that we reached out to for comment and review on our analysis of the weather trends in Valencia, Spain was Professor Ellis of <insert who they are and what they work on>. The first question that we asked all our interviewees was, “what are your critiques of our report and how do you think that it is applicable to a real life situation”. <add more stuff here later> 
+\\
+\\
+Interview with Sanjay Priyadarshi of Bloomreach Inc
+Sanjay is a customer success manager at Bloomreach that specializes in delivering products to customers by streamlining the process of SaaS to customers and using data to provide strong evidence for market movements and business solutions. I asked him about how our project relates to a business standpoint and he gave us some valuable insights to our report and where it plays a role in industry. Many industries that are related to sports or entertainment have a lot of information about the sports industry. One thing that was brought up was how weather is an important factor in games like cricket, baseball, and football. Most of these sports take place in open stadiums and there are huge masses that come to attend these events. The seasons for these sports are strategically chosen to be played during a certain season because of the positive weathers associated with that season. One example of this is baseball that is often played in the summer months and relies on the good weather and heat for large attendance and ease of play for the players purely based on the fact that baseball is hard to play in the rain and snow. In this way machine learning is a prime example of how we can figure out the probability of weather chances and the general trends in weather to find the time period in which it will rain, snow, or have unpredictable weather. Although from what we discussed, Sanjay could not really say that the weather project was a big part of the role and business that he played, he acknowledged that machine learning in his team has a primary purpose: making sense of unorganized data on a large scale by making meaningful predictions out of it.
+
+
 
 \end{document}
