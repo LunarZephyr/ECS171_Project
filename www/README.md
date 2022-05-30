@@ -20,3 +20,9 @@ request params for the user inputted values should follow the following names:
     "fossil_oil", "hydro_pumped_storage_consumption",
     "hydro_run_of_river_poundage", "hydro_water_reservoir", "nuclear", "other",
     "other_renewable", "solar", "waste", "wind_onshore", "total_load_actual"]`
+
+For the categorical weather attributes when sending user input to the backend:
+ - `weather_main` should have one of the following values: `["Clear", "Clouds",
+  "Drizzle", "Fog", "Mist", "Rain"]`
+ - `season` should be one of the following: `["fall", "spring", "summer", "winter"]`
+ - `time_of_day` should be one of the following: `["day", "morning", "night"]`

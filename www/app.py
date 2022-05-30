@@ -86,10 +86,10 @@ def get_feature_one_hot_encoding(feature, feature_params):
     Returns:
         list: One-hot encoding of the feature value
     """
+    feature = feature.lower()
     mapping = {}
     for param in range(len(feature_params)):
-        mapping[feature_params[param]] = param
-
+        mapping[feature_params[param].lower()] = param
     one_hot_encoding = []
 
     encoding = list(np.zeros(len(feature_params), dtype=int))
