@@ -1,0 +1,74 @@
+<!DOCTYPE HTML>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="reset.css">
+    <link rel="stylesheet" href="index.css">
+    <script defer type="text/javascript" src="ajax.js"></script>
+    <script defer type="text/javascript" src="index.js"></script>
+
+    <title>XGBoost Model</title>
+</head>
+<body>
+    <header>
+        <div id="headerarea"> 
+            <div id="titlelogo">
+                <div id="logocontainer"><img src="powerline.png" id="logo"></div>
+                <h1 id="title">XGBoost Energy Predictions</h1>
+            </div>
+        </div>
+    </header>
+    <main>
+        <div id="nav">
+            <div class="navbutton" id="homebutton">Home</div>
+            <div class="navbutton" id="currbutton">Current Predictions</div>
+            <div class="navbutton" id="futbutton">Future Predictions</div>
+        </div>
+        <div id="explain">
+            <h2 id="mainheader">A new way to think about energy usage...</h2>
+            <div id="description">
+                <div id="xgboostimgcontainer"><img src="xgboost.png" id="xgboostimg"></div>
+                <p class="desctext">The goal of this project was to determine the effects of weather conditions on energy demand and generation from various sources. 
+                    We utilized several different machine learning methods and algorithms to find which one gave us a possible correlation between variables. 
+                    Our main methodology was to find a regression model that matched and accurately predicted the outcome of later data. 
+                    Our group ran many models such as ANN’s, DNN’s, XGBoost, and other various algorithms.</p>
+                <p class="desctext">The first model that we found significant success in was the XGBoost regression model. 
+                    We selected this model due to its widespread adoption in industry applications due to its high model capacity, 
+                    prediction performance, and other performance benefits such as parallelism (through the implemented framework).  
+                    XGBoost is an ensemble model variant, where ensembling occurs in a sequential fashion, using gradient boosting.  
+                    Each model in the ensemble is trained to correct the error of the previous model in the ensemble by updating its 
+                    weights using the gradient of the loss function with respect to the previous’ models output (and thus, error).  
+                    This allows for computational feasibility and heightened performance. 
+                    Further, our data is tabular, a data form that XGBoost handles very well.</p>
+                <p class="desctext">This website presents a frontend for our model, which is able to take information about weather conditions and generation data.
+                    The model can output predicted information about predicted load and predicted price.</p>
+                <p class="desctext">Ultimately, the area of greatest interest that we found was Spain. 
+                    Spain is one of the countries that borders the Mediterranean climate and has both a dry and wet climate from the hot summers, 
+                    to the cool and chilly winters. The variability in temperature, humidity, 
+                    and electricity usage made Spain a strong candidate four our case study.</p>
+            </div>
+        </div>
+    </main>
+    <footer>
+        <div class="foot">
+            <p>ECS 171a Final Project Frontend</p>
+        </div>
+        <div class="foot" id="memberlist">
+            <p id="membertitle">Group Members:</p>
+            <div id="members">
+                <p class="membername">Hashim Chaudhry</p>
+                <p class="membername">Jacqueline Mitchell</p>
+                <p class="membername">Ameya Naik</p>
+                <p class="membername">Joshua Peterson</p>
+                <p class="membername">Bhargava Sharma</li>
+                <p class="membername">Shreyas Vankayalapati</p>
+                <p class="membername">Claire Wong</p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

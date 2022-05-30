@@ -1,5 +1,6 @@
+from crypt import methods
 import enum
-from flask import Flask, jsonify, request, Response
+from flask import Flask, jsonify, request, Response, send_file
 import pickle5 as pickle
 import requests
 import pandas as pd
@@ -9,10 +10,13 @@ import numpy as np
 from statistics import mode
 import random
 
+
 OPENWEATHER_API_KEY = "a11c32d6bed06cc334b5bcd036947fad"
 ENTSOE_API_KEY = "2d4af50f-d03b-435e-be11-23a69f79cb16"
 
-app = Flask(__name__, static_url_path="", static_folder="client/build")
+app = Flask(__name__, static_url_path="", 
+    static_folder="./public"
+    )
 
 entsoe_client = EntsoePandasClient(api_key=ENTSOE_API_KEY)
 
@@ -324,3 +328,18 @@ def get_prediction_from_input_params():
     weather_and_generation_data = weather_data + generation_data
     price_pred = price_model.predict([weather_and_generation_data])[0]
     return jsonify(dict(price=float(price_pred)))
+
+@app.route("/", methods=["GET"])
+def send_home_page():
+    return send_file('./public/index.html')
+
+@app.route("/current", methods=["GET"])
+def send_current_page():
+    return send_file("./public/current/current.html")
+
+@app.route("/future", methods=["GET"])
+def send_future_page():
+    return send_file("./public/future/future.html")
+
+if __name__ == '__main__':
+	app.run(host='0.0.0.0', port=8080)
