@@ -1,4 +1,3 @@
-import enum
 from flask import Flask, jsonify, request, Response
 import pickle5 as pickle
 import requests
@@ -8,9 +7,13 @@ from datetime import datetime, time, timedelta
 import numpy as np
 from statistics import mode
 import random
+from dotenv import load_dotenv
+import os
 
-OPENWEATHER_API_KEY = "a11c32d6bed06cc334b5bcd036947fad"
-ENTSOE_API_KEY = "2d4af50f-d03b-435e-be11-23a69f79cb16"
+load_dotenv()
+
+OPENWEATHER_API_KEY = os.getenv('OPENWEATHER_API_KEY')
+ENTSOE_API_KEY = os.getenv('ENTSOE_API_KEY')
 
 app = Flask(__name__, static_url_path="", static_folder="client/build")
 
