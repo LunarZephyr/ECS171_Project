@@ -1,0 +1,113 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+body {
+    display: flex;
+    flex-direction: column;
+    font-family: 'Montserrat', sans-serif;
+}
+
+header {
+    background-color: #133A1B;
+}
+
+#titlelogo {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-left: 7.5%;
+    margin-top: 15px;
+    margin-bottom: 0px;
+    font-family: 'Montserrat', sans-serif;
+    font-style: italic;
+    font-size: 55px;
+}
+#logocontainer {
+    max-width: 100px;
+    margin-right: 20px;
+}
+#logo {
+    width: 100%;
+    height: auto;
+}
+#title {
+    color: #E4E4dC;
+}
+
+main{
+    background-color: #FCF9D9;
+}
+#nav {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    background-color: #011B10;
+    color: #E4E4dC;
+}
+.navbutton{
+    padding-left: 15px;
+    padding-right: 15px;
+    transition: 0.3s;
+    cursor: pointer;
+}
+.navbutton:hover{
+    background-color: #133A1B;
+}
+#homebutton{
+    margin-left: 60px;
+    background-color: #133A1B;
+}
+
+#explain {
+    margin: 25px 0px 25px 0px;
+    display: flex;
+    align-items: center;
+}
+#mainheader {
+    font-size: 30px;
+    margin-bottom: 20px;
+    margin-left: 50px;
+}
+#description {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-left: 30px;
+    margin-right: 30px;
+}
+.desctext {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    text-indent: 30px;
+    max-width: 85vw;
+}
+#xgboostimgcontainer {
+    max-width: 80%;
+}
+#xgboostimg {
+    width: 100%;
+    height: auto;
+}
+
+footer {
+    background-color: #133A1B;
+    color: #E4E4dC;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+#memberlist {
+    font-size: 15px;
+    display: flex;
+    flex-direction: column;
+    max-width: 400px;
+}
+#members{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+.membername{
+    margin: 0px 5px 0px 5px;
+}
