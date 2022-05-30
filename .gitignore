@@ -3,3 +3,4 @@
 *-checkpoint.ipynb
 model_pkl
 .DS_Store
+.env
