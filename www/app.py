@@ -45,10 +45,10 @@ baseline_data.drop(
         "time",
         "temp_min",
         "temp_max",
-        "weather_main_thunderstorm"
+        "weather_main_thunderstorm",
     ],
     axis=1,
-    inplace=True
+    inplace=True,
 )
 
 numerical_weather_features = [
@@ -312,19 +312,20 @@ def get_current_prediction():
         pd.concat([weather_data.iloc[0], generation_data.iloc[0]]).to_frame().T
     )
     price_pred = price_model.predict(weather_and_generation_data.to_numpy())[0]
-    explainer = shap.TreeExplainer(
-        price_model, data=baseline_data.to_numpy()
+    explainer = shap.TreeExplainer(price_model, data=baseline_data.to_numpy())
+
+    shap_values = explainer.shap_values(
+        weather_and_generation_data.to_numpy()[0], check_additivity=False
     )
-    print(weather_and_generation_data)
-    shap_values = explainer.shap_values(weather_and_generation_data.to_numpy()[0], check_additivity=False)
     plt.figure(figsize=(30, 30))
     shap.force_plot(
         explainer.expected_value,
         shap_values,
         weather_and_generation_data,
+        show=False,
         matplotlib=True,
     )
-    plt.savefig("shap_bar.png")
+    plt.savefig("public/shap_bar.png")
     return jsonify(
         dict(
             price=float(price_pred),
