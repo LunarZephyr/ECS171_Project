@@ -322,6 +322,7 @@ def get_current_prediction():
         explainer.expected_value,
         shap_values,
         weather_and_generation_data,
+        text_rotation=15,
         show=False,
         matplotlib=True,
     )
