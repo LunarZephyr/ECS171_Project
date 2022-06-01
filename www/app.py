@@ -46,6 +46,7 @@ baseline_data.drop(
         "temp_min",
         "temp_max",
         "weather_main_thunderstorm",
+        "total load forecast"
     ],
     axis=1,
     inplace=True,
@@ -311,6 +312,8 @@ def get_current_prediction():
     weather_and_generation_data = (
         pd.concat([weather_data.iloc[0], generation_data.iloc[0]]).to_frame().T
     )
+    print(weather_and_generation_data, len(weather_and_generation_data.columns))
+    print(baseline_data, len(baseline_data.columns))
     price_pred = price_model.predict(weather_and_generation_data.to_numpy())[0]
     explainer = shap.TreeExplainer(price_model, data=baseline_data.to_numpy())
 
