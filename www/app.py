@@ -318,7 +318,7 @@ def get_current_prediction():
         weather_and_generation_data.to_numpy()[0], check_additivity=False
     )
     plt.figure(figsize=(30, 30))
-    shap.force_plot(
+    fig = shap.force_plot(
         explainer.expected_value,
         shap_values,
         weather_and_generation_data,
@@ -326,6 +326,7 @@ def get_current_prediction():
         show=False,
         matplotlib=True,
     )
+    fig.patch.set_facecolor('#FCF9D9')
     plt.savefig("public/shap_bar.png")
     return jsonify(
         dict(
