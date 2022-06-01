@@ -11,20 +11,45 @@ from statistics import mode
 import random
 from dotenv import load_dotenv
 import os
+import shap
+import matplotlib
+from matplotlib import pyplot as plt
 
 load_dotenv()
 
-OPENWEATHER_API_KEY = os.getenv('OPENWEATHER_API_KEY')
-ENTSOE_API_KEY = os.getenv('ENTSOE_API_KEY')
+plt.switch_backend("Agg")
 
-app = Flask(__name__, static_url_path="", 
-    static_folder="./public"
-    )
+OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY")
+ENTSOE_API_KEY = os.getenv("ENTSOE_API_KEY")
+
+app = Flask(__name__, static_url_path="", static_folder="./public")
 
 entsoe_client = EntsoePandasClient(api_key=ENTSOE_API_KEY)
 
 with open("XGBOOST_predict_price.pkl", "rb") as f:
     price_model = pickle.load(f)
+
+baseline_data = pd.read_csv("final_baseline_data.csv")
+baseline_data.drop(
+    columns=[
+        "forecast solar day ahead",
+        "forecast wind onshore day ahead",
+        "generation wind offshore",
+        "generation geothermal",
+        "generation fossil peat",
+        "generation fossil oil shale",
+        "generation fossil coal-derived gas",
+        "generation marine",
+        "price day ahead",
+        "price actual",
+        "time",
+        "temp_min",
+        "temp_max",
+        "weather_main_thunderstorm",
+    ],
+    axis=1,
+    inplace=True,
+)
 
 numerical_weather_features = [
     "temp",
@@ -90,10 +115,10 @@ def get_feature_one_hot_encoding(feature, feature_params):
     Returns:
         list: One-hot encoding of the feature value
     """
+    feature = feature.lower()
     mapping = {}
     for param in range(len(feature_params)):
-        mapping[feature_params[param]] = param
-
+        mapping[feature_params[param].lower()] = param
     one_hot_encoding = []
 
     encoding = list(np.zeros(len(feature_params), dtype=int))
@@ -287,7 +312,22 @@ def get_current_prediction():
         pd.concat([weather_data.iloc[0], generation_data.iloc[0]]).to_frame().T
     )
     price_pred = price_model.predict(weather_and_generation_data.to_numpy())[0]
+    explainer = shap.TreeExplainer(price_model, data=baseline_data.to_numpy())
 
+    shap_values = explainer.shap_values(
+        weather_and_generation_data.to_numpy()[0], check_additivity=False
+    )
+    plt.figure(figsize=(30, 30))
+    fig = shap.force_plot(
+        explainer.expected_value,
+        shap_values,
+        weather_and_generation_data,
+        text_rotation=15,
+        show=False,
+        matplotlib=True,
+    )
+    fig.patch.set_facecolor('#FCF9D9')
+    plt.savefig("public/shap_bar.png")
     return jsonify(
         dict(
             price=float(price_pred),
@@ -332,17 +372,21 @@ def get_prediction_from_input_params():
     price_pred = price_model.predict([weather_and_generation_data])[0]
     return jsonify(dict(price=float(price_pred)))
 
+
 @app.route("/", methods=["GET"])
 def send_home_page():
-    return send_file('./public/index.html')
+    return send_file("./public/index.html")
+
 
 @app.route("/current", methods=["GET"])
 def send_current_page():
     return send_file("./public/current/current.html")
 
+
 @app.route("/future", methods=["GET"])
 def send_future_page():
     return send_file("./public/future/future.html")
 
-if __name__ == '__main__':
-	app.run(host='0.0.0.0', port=8080)
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8080)
