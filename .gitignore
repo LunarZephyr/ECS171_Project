@@ -4,5 +4,5 @@
 model_pkl
 .DS_Store
 .env
-shap_nn.png
-shap_bar.png
+www/public/shap_nn.png
+www/public/shap_bar.png
