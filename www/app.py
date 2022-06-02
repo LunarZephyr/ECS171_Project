@@ -9,15 +9,18 @@ from statistics import mode
 import random
 from dotenv import load_dotenv
 import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
 import matplotlib
 matplotlib.use("Agg")
 from matplotlib import pyplot as plt
 import shap
+import tensorflow as tf
+import tensorflow.keras as keras
 
 
 load_dotenv()
 
-plt.switch_backend("Agg")
+
 
 OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY")
 ENTSOE_API_KEY = os.getenv("ENTSOE_API_KEY")
@@ -103,6 +106,14 @@ cities = ["valencia", "barcelona", "bilbao", "madrid", "seville"]
 min_price = 13.55
 max_price = 99.5
 
+
+load_model = keras.models.load_model('LoadNN.ann')
+
+nndata = pd.read_csv("NNData.csv")
+nndata.drop(["load"], inplace=True, axis=1)
+
+NNscales = np.asarray([23.0, 40.115214679859605, 79.76803501358285, 96.34228795653486, 20.70917597343797, 22974.0], np.float64)
+NNmins = np.asarray([0.0, 269.77175332496984, 19.867491699366134, 0.0, 0.0, 18041.0], np.float64)
 
 def get_feature_one_hot_encoding(feature, feature_params):
     """
@@ -297,17 +308,18 @@ def get_current_generation_data() -> pd.DataFrame:
     return generation_data.to_frame().T
 
 
-@app.route("/prediction/current")
+@app.route("/prediction/current", methods=["get"])
 def get_current_prediction():
     weather_data = get_avg_weather_features_data()
     generation_data = get_current_generation_data()
     weather_and_generation_data = (
         pd.concat([weather_data.iloc[0], generation_data.iloc[0]]).to_frame().T
     )
-    print(weather_and_generation_data, len(weather_and_generation_data.columns))
-    print(baseline_data, len(baseline_data.columns))
+
     price_pred = price_model.predict(weather_and_generation_data.to_numpy())[0]
     explainer = shap.TreeExplainer(price_model, data=baseline_data.to_numpy())
+
+    print(weather_and_generation_data.to_numpy())
 
     shap_values = explainer.shap_values(
         weather_and_generation_data.to_numpy()[0], check_additivity=False
@@ -321,7 +333,8 @@ def get_current_prediction():
         show=False,
         matplotlib=True,
     )
-    fig.patch.set_facecolor('#FCF9D9')
+    fig.set_facecolor('#FCF9D9')
+    fig.axes[0].set_facecolor('#FCF9D9')
     plt.savefig("public/shap_bar.png")
     return jsonify(
         dict(
@@ -332,40 +345,64 @@ def get_current_prediction():
     )
 
 
-@app.route("/prediction")
+@app.route("/prediction", methods=["POST"])
 def get_prediction_from_input_params():
-    request_args = request.args.to_dict()
+    print("hi")
+    rowDict = request.json
+    print(rowDict)
+    row = pd.DataFrame(rowDict)
+    for i in range(5):
+        row.iloc[0, i] -= NNmins[i]
+        row.iloc[0, i] /= NNscales[i]
+    print(row)
 
-    weather_data = []
-    generation_data = []
-    for feature in numerical_weather_features:
-        if request_args.get(feature) == None:
-            return Response(
-                f"{feature} feature not included in request parameters", status=400
-            )
-        weather_data.append(float(request_args.get(feature)))
+    y = load_model.predict(row.to_numpy(), verbose=0)[0][0]
+    y = float(y)
+    y *= NNscales[5]
+    y += NNmins[5]
 
-    for i, feature in enumerate(weather_categorical_input_params):
-        if request_args.get(feature) == None:
-            return Response(
-                f"{feature} feature not included in request parameters", status=400
-            )
-        categorical_feature = request_args.get(feature)
-        weather_data.extend(
-            get_feature_one_hot_encoding(
-                feature=categorical_feature, feature_params=categorical_features[i]
-            )[0]
+
+    #get shap values
+    explainer = shap.DeepExplainer(load_model, data=nndata.to_numpy())
+    shap_values = explainer.shap_values(
+        row.to_numpy(), check_additivity=True
+    )
+
+    #rescale
+    for i in range(5):
+        shap_values[0][0][i] *= NNscales[5]
+        row.iloc[0, i] *= NNscales[i]
+        row.iloc[0, i] += NNscales[i]
+    ev = explainer.expected_value[0].numpy()
+    ev *= NNscales[5]
+    ev += NNmins[5]
+    row = row.round(decimals = 2)
+
+    #plot
+    fig = plt.gcf()
+    fig = shap.force_plot(
+        ev,
+        shap_values[0][0],
+        row,
+        text_rotation=70,
+        show=False,
+        matplotlib=True,
+        contribution_threshold=0
+    )
+    fig.set_size_inches(20, 5)
+    fig.set_facecolor('#FCF9D9')
+    fig.axes[0].set_facecolor('#FCF9D9')
+    plt.savefig("public/shap_nn.png")
+
+    #return data
+    return jsonify(
+        dict (
+            load=float(round(y, 2))
         )
+    )
 
-    for feature in generation_input_params:
-        if request_args.get(feature) == None:
-            return Response(
-                f"{feature} feature not included in request parameters", status=400
-            )
-        generation_data.append(float(request_args.get(feature)))
-    weather_and_generation_data = weather_data + generation_data
-    price_pred = price_model.predict([weather_and_generation_data])[0]
-    return jsonify(dict(price=float(price_pred)))
+
+
 
 
 @app.route("/", methods=["GET"])

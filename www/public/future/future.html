@@ -17,7 +17,7 @@
         <div id="headerarea"> 
             <div id="titlelogo">
                 <div id="logocontainer"><img src="powerline.png" id="logo"></div>
-                <h1 id="title">XGBoost Energy Predictions</h1>
+                <h1 id="title">ML Energy Predictions</h1>
             </div>
         </div>
     </header>
@@ -27,8 +27,44 @@
             <div class="navbutton" id="currbutton">Current Predictions</div>
             <div class="navbutton" id="futbutton">Future Predictions</div>
         </div>
+        <div id="entrywrapper">
+            <div id="entry">
+                <div id="textEntry">
+                    <h2 id="textEntryTitle">Enter Data:</h2>
+                    <div class="entryField">
+                        <label>Time (Integer):</label>
+                        <input class="inputField" type="text" id="time" name="time">
+                    </div>
+                    <div class="entryField">
+                        <label>Temperature (Celsius):</label>
+                        <input class="inputField" type="text" id="temp" name="temp">
+                    </div>
+                    <div class="entryField">
+                        <label>Humidity (Percent):</label>
+                        <input class="inputField" type="text" id="humidity" name="humidity">
+                    </div>
+                    <div class="entryField">
+                        <label>Cloud Cover (Percent):</label>
+                        <input class="inputField" type="text" id="clouds" name="clouds">
+                    </div>
+                    <div class="entryField">
+                        <label>Wind Speed (m/s):</label>
+                        <input class="inputField" type="text" id="winds" name="winds">
+                    </div>
+                    <div id = "continueContainer"><p>Continue:</p></div>
+                </div>
+            </div>
+        </div>
         <div id="body">
-            <p>Insert Something</p>
+            <h2 id="mainheader">Getting Data...</h2>
+            <div id="description">
+                <div id="shap_barimgcontainer">
+                    <img src="shap_nn.png" id="shap_bar" /></div>
+                <p class="desctext">How does this work?</p>
+                <p class="desctext">The ANN takes in a limited set of variables and expands them into categories which are easier to find patterns in
+                </p>
+                <p class="desctext">A prediction is made, scaled and sent back to the user</p>
+                <p class="desctext">The shap plot shows the weight that each of the variables had on the final result.</p>
         </div>
     </main>
     <footer>

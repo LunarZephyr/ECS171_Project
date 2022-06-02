@@ -17,4 +17,5 @@ sendGetRequest('/prediction/current')
     priceText.textContent = "Current Price Forecast: €" + String(Math.round(price * 100) / 100) + " per MWh";
     document.getElementById("loadtext").style.display = "none";
     document.getElementById("shap_bar").style.display = "inline";
+    document.getElementById("shap_bar").src = "shap_bar.png?t=" + new Date().getTime();
 });
