@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
+
 body {
     display: flex;
     flex-direction: column;
@@ -64,7 +65,6 @@ main{
     margin: 25px 0px 25px 0px;
     display: flex;
     align-items: center;
-    margin-bottom: 300px;
 }
 #mainheader {
     font-size: 30px;
@@ -74,7 +74,7 @@ main{
 #description {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     margin-left: 30px;
     margin-right: 30px;
 }
@@ -83,6 +83,12 @@ main{
     margin-bottom: 10px;
     text-indent: 30px;
     max-width: 85vw;
+}
+.descQ {
+    margin-top: 30px;
+}
+.descB {
+    margin-left: 75px
 }
 #shap_barimgcontainer {
     max-width: 100%;

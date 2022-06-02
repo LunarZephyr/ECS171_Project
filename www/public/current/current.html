@@ -10,10 +10,10 @@
     <script defer type="text/javascript" src="ajax.js"></script>
     <script defer type="text/javascript" src="/current/current.js"></script>
 
-    <title>XGBoost Model</title>
+    <title>ML Energy: Current</title>
 </head>
 <body>
-    <header>
+    <header id="header">
         <div id="headerarea"> 
             <div id="titlelogo">
                 <div id="logocontainer"><img src="powerline.png" id="logo"></div>
@@ -33,14 +33,40 @@
                 <div id="shap_barimgcontainer">
                     <p id="loadtext">Getting Explainer Image...</p>
                     <img src="shap_bar.png" id="shap_bar" /></div>
-                <p class="desctext">How does this work?</p>
-                <p class="desctext">The XGBoost model provides us with a short range model to predict short term price.
-                    Due to this fact, we have access to far more data, and can utilize a short term decision tree approach.
-                </p>
-                <p class="desctext">The shap plot shows the contributions of each variable.</p>
+                <p class="desctext descQ">What is being forecasted?</p>
+                <ul>
+                    <li class="desctext descB">
+                        We are forecasting price, a measure of cost per unit energy.
+                    </li>
+                </ul>
+                <p class="desctext descQ">How does this work?</p>
+                <ul>
+                    <li class="desctext descB">
+                        We make an API call to OpenWeather and Entose to get current generation and weather data.
+                    </li>
+                    <li class="desctext descB">
+                        We run the data through the XGBoost model, to get a short range price.
+                    </li>
+                    <li class="desctext descB">
+                        Due to this fact, we have access to far more data, and can utilize a short term decision tree approach.
+                    </li>
+                </ul>
+                <p class="desctext descQ">What does the plot show?</p>
+                <ul>
+                    <li class="desctext descB">
+                        The shap plot shows the contributions of each variable to the final value.
+                    </li>
+                    <li class="desctext descB">
+                        Variables in red caused an increase in the expected price.
+                    </li>
+                    <li class="desctext descB">
+                        Variables in blue caused a decrease in the expected price.
+                    </li>
+                </ul>
+            </div>
         </div>
     </main>
-    <footer>
+    <footer id="footer">
         <div class="foot">
             <p>ECS 171 Final Project Frontend</p>
         </div>

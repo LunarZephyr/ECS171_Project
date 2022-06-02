@@ -14,7 +14,6 @@ import matplotlib
 matplotlib.use("Agg")
 from matplotlib import pyplot as plt
 import shap
-import tensorflow as tf
 import tensorflow.keras as keras
 
 
@@ -347,38 +346,39 @@ def get_current_prediction():
 
 @app.route("/prediction", methods=["POST"])
 def get_prediction_from_input_params():
-    print("hi")
+    #get data
     rowDict = request.json
-    print(rowDict)
     row = pd.DataFrame(rowDict)
+
+    #scale data down
     for i in range(5):
         row.iloc[0, i] -= NNmins[i]
         row.iloc[0, i] /= NNscales[i]
-    print(row)
 
+    #generate prediction
     y = load_model.predict(row.to_numpy(), verbose=0)[0][0]
-    y = float(y)
-    y *= NNscales[5]
-    y += NNmins[5]
-
-
+  
     #get shap values
     explainer = shap.DeepExplainer(load_model, data=nndata.to_numpy())
     shap_values = explainer.shap_values(
         row.to_numpy(), check_additivity=True
     )
 
-    #rescale
+    #rescale back up
     for i in range(5):
         shap_values[0][0][i] *= NNscales[5]
         row.iloc[0, i] *= NNscales[i]
-        row.iloc[0, i] += NNscales[i]
+        row.iloc[0, i] += NNmins[i]
+    y = float(y)
+    y *= NNscales[5]
+    y += NNmins[5]
+    row.iloc[0, 1] -= 273.15
     ev = explainer.expected_value[0].numpy()
     ev *= NNscales[5]
     ev += NNmins[5]
     row = row.round(decimals = 2)
 
-    #plot
+    #plot shap values
     fig = plt.gcf()
     fig = shap.force_plot(
         ev,

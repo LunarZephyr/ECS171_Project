@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="index.css">
     <script defer type="text/javascript" src="index.js"></script>
 
-    <title>XGBoost Model</title>
+    <title>ML Energy</title>
 </head>
 <body>
     <header>
@@ -42,6 +42,10 @@
                     weights using the gradient of the loss function with respect to the previous’ models output (and thus, error).  
                     This allows for computational feasibility and heightened performance. 
                     Further, our data is tabular, a data form that XGBoost handles very well.</p>
+                <p class="desctext"> Another model that we found success with was a sequential feed-forward neural network.
+                    This model was able to take in a more limited amount of data, and still find a decent correlation between total load and pure weather variables.
+                    The neural network has four layers, the first three use ELU activation and the output layer uses tanh activation.
+                    It takes in weighted averaged weather variables, as it performs better with a weighted average compared to a regular average.</p>
                 <p class="desctext">This website presents a frontend for our model, which is able to take information about weather conditions and generation data.
                     The model can output predicted information about predicted load and predicted price.</p>
                 <p class="desctext">Ultimately, the area of greatest interest that we found was Spain. 

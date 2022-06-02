@@ -10,10 +10,10 @@
     <script defer type="text/javascript" src="ajax.js"></script>
     <script defer type="text/javascript" src="/future/future.js"></script>
 
-    <title>XGBoost Model</title>
+    <title>ML Energy: Future</title>
 </head>
 <body>
-    <header>
+    <header id="header">
         <div id="headerarea"> 
             <div id="titlelogo">
                 <div id="logocontainer"><img src="powerline.png" id="logo"></div>
@@ -56,18 +56,44 @@
             </div>
         </div>
         <div id="body">
-            <h2 id="mainheader">Getting Data...</h2>
+            <h2 id="mainheader">Getting Price...</h2>
             <div id="description">
                 <div id="shap_barimgcontainer">
-                    <img src="shap_nn.png" id="shap_bar" /></div>
-                <p class="desctext">How does this work?</p>
-                <p class="desctext">The ANN takes in a limited set of variables and expands them into categories which are easier to find patterns in
-                </p>
-                <p class="desctext">A prediction is made, scaled and sent back to the user</p>
-                <p class="desctext">The shap plot shows the weight that each of the variables had on the final result.</p>
+                    <img src="shap_bar.png" id="shap_bar" /></div>
+                <p class="desctext descQ" id="firstQ">What is being forecasted?</p>
+                <ul>
+                    <li class="desctext descB">
+                        We are forecasting load, a measure of power, or energy per unit time, which illustrates the current demand for energy at that instant.
+                    </li>
+                </ul>
+                <p class="desctext descQ">How does this work?</p>
+                <ul>
+                    <li class="desctext descB">
+                        The user (you) inputs data into the text fields.
+                    </li>
+                    <li class="desctext descB">
+                        We run the data through the neural network, which gives us a load prediction.
+                    </li>
+                    <li class="desctext descB">
+                        Due to this fact, only have a few data inputs, so the forecast will be less accurate.
+                    </li>
+                </ul>
+                <p class="desctext descQ">What does the plot show?</p>
+                <ul>
+                    <li class="desctext descB">
+                        The shap plot shows the contributions of each variable to the final value.
+                    </li>
+                    <li class="desctext descB">
+                        Variables in red caused an increase in the expected price.
+                    </li>
+                    <li class="desctext descB">
+                        Variables in blue caused a decrease in the expected price.
+                    </li>
+                </ul>
+            </div>
         </div>
     </main>
-    <footer>
+    <footer id="footer">
         <div class="foot">
             <p>ECS 171 Final Project Frontend</p>
         </div>
