@@ -27,7 +27,7 @@ async function sendPostRequest(url,data) {
     
     let response = await fetch(url,params);
     if (response.ok) {
-        let data = await response.text();
+        let data = await response.json();
         return data;
     } else {
         throw Error(response.status);

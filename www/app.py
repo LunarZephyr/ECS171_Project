@@ -1,5 +1,3 @@
-from crypt import methods
-import enum
 from flask import Flask, jsonify, request, Response, send_file
 import pickle5 as pickle
 import requests
@@ -11,9 +9,11 @@ from statistics import mode
 import random
 from dotenv import load_dotenv
 import os
-import shap
 import matplotlib
+matplotlib.use("Agg")
 from matplotlib import pyplot as plt
+import shap
+
 
 load_dotenv()
 
@@ -46,6 +46,7 @@ baseline_data.drop(
         "temp_min",
         "temp_max",
         "weather_main_thunderstorm",
+        "total load forecast"
     ],
     axis=1,
     inplace=True,
@@ -107,11 +108,9 @@ def get_feature_one_hot_encoding(feature, feature_params):
     """
     Generate One-hot Encoding of a feature
     Source: https://www.educative.io/edpresso/one-hot-encoding-in-python
-
     Args:
         feature: Feature value to encode
         feature_params: All possible values of the feature
-
     Returns:
         list: One-hot encoding of the feature value
     """
@@ -160,11 +159,9 @@ def get_api_numerical_weather_features_data(weather_data) -> list:
     """
     Get the current values of all the weather features from the JSON file
     returned by the OpenWeather API.
-
     Args:
         weather_data: dictionary containing the weather data returned by the
         API.
-
     Returns:
         list: List of the weather feature values
     """
@@ -204,10 +201,8 @@ def get_api_numerical_weather_features_data(weather_data) -> list:
 def get_api_categorical_weather_features_data(weather_data: dict) -> list:
     """
     Get values of categorical weather attributes from weather API
-
     Args:
         weather_data (dict): Dictionary containing weather data
-
     Returns:
         list: List containing values for categorical attributes
     """
@@ -221,7 +216,6 @@ def get_api_categorical_weather_features_data(weather_data: dict) -> list:
 def get_avg_weather_features_data() -> pd.DataFrame:
     """
     Get the average weather feature data for the 5 cities in Spain.
-
     Returns:
         pd.DataFrame: A pandas Dataframe containing the averaged weather feature
         data.
@@ -269,7 +263,6 @@ def get_avg_weather_features_data() -> pd.DataFrame:
 def get_current_generation_data() -> pd.DataFrame:
     """
     Extract the current generation data from the ENTSOE API.
-
     Returns:
         pd.DataFrame: Pandas Dataframe containing current generation data
     """
