@@ -4,8 +4,11 @@ print("Importing libraries...")
 ## General imports
 import pandas as pd
 import numpy as np
+import matplotlib
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
 
 ## Data preprocessing imports
 from sklearn.model_selection import train_test_split
@@ -71,11 +74,6 @@ def MinMaxScaler(column):
 for col in WxAverages.columns:
     WxAverages[col] =   MinMaxScaler(WxAverages[col])
 load = MinMaxScaler(Energy['total load actual'])
-print(load.isnull().any())
-print(colScales)
-print(colMins)
-NNData = pd.concat([WxAverages, pd.DataFrame(data=load, columns = ["load"])], axis=1)
-NNData.to_csv('NNData.csv', index=False)
 
 
 print("Creating and training the model. This may take a while...")
@@ -100,7 +98,7 @@ loadNN = create_model()
 wxtrain, wxtest, loadtrain, loadtest = train_test_split(WxAverages, load, test_size = 0.1, random_state=0)
 
 # Train the model
-hist = loadNN.fit(wxtrain.to_numpy(), wxtrain.to_numpy(), epochs=500, verbose=0)
+hist = loadNN.fit(wxtrain.to_numpy(), loadtrain.to_numpy(), epochs=500, verbose=0)
 print("Finished training model.")
 
 
@@ -120,3 +118,4 @@ while ((uInput != "y") and (uInput != "n")):
     uInput = input("Would you like to save the neural network to disk (y/n)?")
 if uInput == "y":
     loadNN.save('./savedmodels/LoadNN.ann')
+    print("NN saved to /savedmodels/LoadNN.ann")
