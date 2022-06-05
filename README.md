@@ -14,7 +14,7 @@ The Github repo has the following structure:
     - Please note: that GridSearch for the XGBoost Price Model is in `EDA/Claire/xgboost.ipynb`.  Unfortunately, it took too long to recreate (to run and show the output, it took about 5 hours) in `Models_XGBoost_and_SHAP.ipynb`.  Apologies for this!
   - The `Models_Neural_Net.ipynb` contains the neural network with tuned hyperparameters.
   - The `Models_polynomial_regression.ipynb` contains the polynomial regression notebook.
-  - The data-wrangling and data-engineering notebook `Dataset_Engineering_Preparation.ipynb` contains feature engineering and preparing a baseline training and testing for our XGBoost price model (the data used in the NN model and how it was constructed from the raw csvs can be seen in `Models_Neural_Network.ipynb` and `EDA/Ameya/removeDuplicates.py)
+  - The data-wrangling and data-engineering notebook `Dataset_Engineering_Preparation.ipynb` contains feature engineering and preparing a baseline training and testing for our XGBoost price model (the data used in the NN model and how it was constructed from the raw csvs can be seen in `Models_Neural_Network.ipynb` and `EDA/Ameya/removeDuplicates.py`)
   - The resulting data file from running this notebook that is used to train the models is called `final_baseline_data.csv`
 - The `Report` folder contains the tex file of our final report along with the
   images used.
