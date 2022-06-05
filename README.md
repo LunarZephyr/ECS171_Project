@@ -1,6 +1,7 @@
 # ECS171 Group 25 Final Project
 
 The Github repo has the following structure:
+Please read this for the relevant parts of the repo!
 
 - The `data` folder contains the raw csv files from our
   [dataset](https://www.kaggle.com/datasets/nicholasjhana/energy-consumption-generation-prices-and-weather) in addition to the final version of processed data.
@@ -12,6 +13,7 @@ The Github repo has the following structure:
 - The notebooks with individual models are located in the `FinalModelNotebooks` directory.
   - The `Models_XGBoost_and_SHAP.ipynb` file contains the source code for our XGBoost model for price prediction and the SHAP analysis.
     - Please note: that GridSearch for the XGBoost Price Model is in `EDA/Claire/xgboost.ipynb`.  Unfortunately, it took too long to recreate (to run and show the output, it took about 5 hours) in `Models_XGBoost_and_SHAP.ipynb`.  Apologies for this!
+    - Also, the XGBoost model related notebooks in `EDA/Jacqueline` are experimental and were for developmental purposes.  Please use the notebook mentioned above `Models_XGBoost_and_SHAP.ipynb` for running the XGboost price model
   - The `Models_Neural_Net.ipynb` contains the neural network with tuned hyperparameters.
   - The `Models_polynomial_regression.ipynb` contains the polynomial regression notebook.
   - The data-wrangling and data-engineering notebook `Dataset_Engineering_Preparation.ipynb` contains feature engineering and preparing a baseline training and testing for our XGBoost price model (the data used in the NN model and how it was constructed from the raw csvs can be seen in `Models_Neural_Network.ipynb` and `EDA/Ameya/removeDuplicates.py`)
