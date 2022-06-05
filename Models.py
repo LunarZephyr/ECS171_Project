@@ -127,6 +127,8 @@ if uInput == "y":
     
 ### XGBOOST
 
+print("Beginning XGBOOST for Price Prediction...")
+
 total = pd.read_csv("final_baseline_data.csv")
 # use these subsets of features
 features = ['temp', 'pressure', 'humidity', 'wind_speed', 'wind_deg', 'rain_1h',
@@ -164,6 +166,7 @@ print("Testing Cross Validation Scores")
 print(cross_val_score(model_xgb, X_test, y_test))
 
 ##### XGBoost shap analysis
+print("Begin SHAP Analysis of XGBoost Price Model")
 X_train_pd = pd.DataFrame(X_train, columns=features[:-1])
 X_test_pd = pd.DataFrame(X_test, columns=features[:-1])
 
