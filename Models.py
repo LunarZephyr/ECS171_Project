@@ -97,7 +97,7 @@ loadNN = create_model()
 wxtrain, wxtest, loadtrain, loadtest = train_test_split(WxAverages, load, test_size = 0.1, random_state=0)
 
 # Train the model
-hist = loadNN.fit(wxtrain.to_numpy(), wxtrain.to_numpy(), epochs=500, verbose=0)
+hist = loadNN.fit(wxtrain.to_numpy(), loadtrain.to_numpy(), epochs=500, verbose=0)
 print("Finished training model.")
 
 
