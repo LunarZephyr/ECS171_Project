@@ -8,6 +8,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
 
 ## Data preprocessing imports
 from sklearn.model_selection import train_test_split
