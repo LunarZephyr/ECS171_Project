@@ -73,11 +73,6 @@ def MinMaxScaler(column):
 for col in WxAverages.columns:
     WxAverages[col] =   MinMaxScaler(WxAverages[col])
 load = MinMaxScaler(Energy['total load actual'])
-print(load.isnull().any())
-print(colScales)
-print(colMins)
-NNData = pd.concat([WxAverages, pd.DataFrame(data=load, columns = ["load"])], axis=1)
-NNData.to_csv('NNData.csv', index=False)
 
 
 print("Creating and training the model. This may take a while...")
