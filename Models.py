@@ -128,15 +128,13 @@ import matplotlib.pyplot as plt
 import xgboost
 from sklearn.feature_selection import mutual_info_regression
 
+print('Beginning Polynomial Regression')
+
 #read the data
-data = pd.read_csv('../../data/final_baseline_data.csv')
+data = pd.read_csv('final_baseline_data.csv')
 
 their_prediction = data['price day ahead']
 
-data = data.drop(['generation fossil coal-derived gas', 'generation fossil oil shale', 
-    'generation fossil peat', 'generation geothermal', 'generation marine', 
-    'generation wind offshore', 'forecast solar day ahead', 'forecast wind onshore day ahead',
-    'total load forecast', 'price day ahead'], axis = 1)
     
 #set x and y values
 y = data['price actual']
@@ -198,8 +196,9 @@ def ridge(x, y, d):
     plt.plot(x_poly_train, y_train_pred, 'r')
     plt.show()
 
-    return model, x_train, x_test, y_train, y_test
+    return ridge_pipe, x_train, x_test, y_train, y_test
 
+print('Creating polynomial regression model: ')
 
 #get model
 poly_reg = ridge(x, y, 3)
