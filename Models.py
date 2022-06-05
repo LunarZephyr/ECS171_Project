@@ -12,6 +12,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 ## Data preprocessing imports
 from sklearn.model_selection import train_test_split
+from sklearn.model_selection import cross_val_score
 
 ## Model Evaluation imports
 from sklearn.metrics import mean_squared_error
@@ -22,6 +23,10 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras import metrics as tfmetrics
+
+## XGBoost imports
+import xgboost
+import shap
 
 print("Beginning the Neural Network training:")
 print("Starting data preprocessing...")
@@ -119,3 +124,56 @@ while ((uInput != "y") and (uInput != "n")):
 if uInput == "y":
     loadNN.save('./savedmodels/LoadNN.ann')
     print("NN saved to /savedmodels/LoadNN.ann")
+
+
+### XGBOOST
+
+total = pd.read_csv("final_baseline_data.csv")
+# use these subsets of features
+features = ['temp', 'pressure', 'humidity', 'wind_speed', 'wind_deg', 'rain_1h',
+       'rain_3h', 'snow_3h', 'clouds_all', 'weather_main_clear',
+       'weather_main_clouds', 'weather_main_drizzle', 'weather_main_fog',
+       'weather_main_mist', 'weather_main_rain', 'time_of_day_day',
+       'time_of_day_morning', 'time_of_day_night', 'season_fall',
+       'season_spring', 'season_summer', 'season_winter', 'generation biomass',
+       'generation fossil brown coal/lignite', 'generation fossil gas',
+       'generation fossil hard coal', 'generation fossil oil',
+       'generation hydro pumped storage consumption',
+       'generation hydro run-of-river and poundage',
+       'generation hydro water reservoir', 'generation nuclear',
+       'generation other', 'generation other renewable', 'generation solar',
+       'generation waste', 'generation wind onshore', 'total load actual',
+       'price actual']
+subset = total[features]
+training, testing = train_test_split(subset, test_size=0.30, random_state=42)
+X_train, y_train = training.to_numpy()[:, :-1], training.to_numpy()[:, -1]
+X_test, y_test = testing.to_numpy()[:, :-1], testing.to_numpy()[:, -1]
+
+# NOTE: these hyperparameters were selected from a GridSearch
+model_xgb = xgboost.XGBRegressor(random_state=42, max_depth=8, n_estimators=800, learning_rate=0.06)
+model_xgb.fit(X_train, y_train)
+
+y_train_pred = model_xgb.predict(X_train)
+print("MSE Training: ", mean_squared_error(y_train, y_train_pred))
+print("R2 Training: ", r2_score(y_train, y_train_pred))
+y_test_pred = model_xgb.predict(X_test)
+print("MSE Testing: ", mean_squared_error(y_test, y_test_pred))
+print("R2 Testing: ", r2_score(y_test, y_test_pred))
+print("Training Cross Validation Scores")
+print(cross_val_score(model_xgb, X_train, y_train))
+print("Testing Cross Validation Scores")
+print(cross_val_score(model_xgb, X_test, y_test))
+
+##### XGBoost shap analysis
+X_train_pd = pd.DataFrame(X_train, columns=features[:-1])
+X_test_pd = pd.DataFrame(X_test, columns=features[:-1])
+
+explainer = shap.TreeExplainer(model_xgb, data=X_train_pd)
+shap_values_train = explainer(X_train_pd)
+
+shap.plots.beeswarm(shap_values_train, max_display=38)
+plt.savefig()
+fig, ax = plt.subplots()
+ax.tick_params(axis='both', which='major', labelsize=50)
+shap.plots.bar(shap_values_train, max_display=38)
+plt.savefig()
