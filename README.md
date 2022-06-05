@@ -8,6 +8,8 @@ The Github repo has the following structure:
   on the csv files.
   - The `EDA/Ameya` folder contains the source code for our NN model.
   - The `EDA/Jacqueline` folder contains the source code for our XGBoost model.
+- The source for the models can also be found in the `Models.ipynb` and
+  `Models.py` files.
 - The `Report` folder contains the tex file of our final report along with the
   images used.
 - The `www` folder contains the source code of
