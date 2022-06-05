@@ -117,6 +117,6 @@ print("r^2 score: %.5f" % r2)
 # Save the model to disk
 uInput = ""
 while ((uInput != "y") and (uInput != "n")):
-    uInput = input("Would you like to save the model to disk (y/n)?")
+    uInput = input("Would you like to save the neural network to disk (y/n)?")
 if uInput == "y":
     loadNN.save('./savedmodels/LoadNN.ann')
