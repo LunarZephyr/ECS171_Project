@@ -8,6 +8,7 @@ The Github repo has the following structure:
   on the csv files.
   - The `EDA/Ameya` folder contains the source code for our NN model.
 - The `Models_XGBoost_and_SHAP.ipynb` folder contains the source code for our XGBoost model for price prediction and the SHAP analysis.
+  - Please note: that GridSearch for the XGBoost Price Model is in `EDA/Claire/xgboost.ipynb`.  Unfortunately, it took too long to recreate (to run and show the output, it took about 5 hours) in `Models_XGBoost_and_SHAP.ipynb`.  Apologies for this!
 - The data-wrangling and data-engineering notebook `Dataset_Engineering_Preparation.ipynb` contains feature engineering and preparing a baseline training and testing for our XGBoost price model (the data used in the NN model and how it was constructed from the raw csvs can be seen in `NN.ipynb`)
   - The resulting data file from running this notebook that is used to train the models is called `final_baseline_data.csv`
 - The source code for the models can also be found in the `Models.ipynb` and
